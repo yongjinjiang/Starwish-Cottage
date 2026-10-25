@@ -1,15 +1,181 @@
-import { useEffect, useState } from 'react';
-import { ArrowRight, Check, Gift as GiftIcon, Star } from 'lucide-react';
-import { errorMessage } from '../lib/domain';
-import type { CottageApi, PublicQuiz, Receipt } from '../lib/types';
-import { Loading, Notice } from './shared';
+import { useEffect, useState } from "react";
+import { ArrowRight, Check, Gift as GiftIcon, Star } from "lucide-react";
+import { errorMessage } from "../lib/domain";
+import type { CottageApi, PublicQuiz, Receipt } from "../lib/types";
+import { Loading, Notice } from "./shared";
 export function QuizPlayer({ api, token }: { api: CottageApi; token: string }) {
-  const [paper,setPaper]=useState<PublicQuiz|null>(null);const [error,setError]=useState('');const [loading,setLoading]=useState(true);const [nickname,setNickname]=useState('');const [answers,setAnswers]=useState<Record<string,number>>({});const [receipt,setReceipt]=useState<Receipt|null>(null);const [busy,setBusy]=useState(false);const [requestId]=useState(()=>{const key=`starwish.quiz.request.${token}`;try{const saved=sessionStorage.getItem(key);if(saved)return saved;const id=crypto.randomUUID();sessionStorage.setItem(key,id);return id;}catch{return crypto.randomUUID();}});
-  useEffect(()=>{let active=true;api.publicQuiz(token).then(p=>{if(active)setPaper(p);}).catch(e=>{if(active)setError(errorMessage(e));}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[api,token]);
-  async function submit(){if(!paper)return;setError('');if(!nickname.trim()){setError('请留下一个 Sonya 认得的昵称。');return;}if(paper.questions.some(q=>answers[q.id]===undefined)){setError('还有题目没有选择答案，请检查一下。');return;}setBusy(true);try{setReceipt(await api.submitQuiz(token,nickname,answers,requestId));try{sessionStorage.removeItem(`starwish.quiz.request.${token}`);}catch{/* Retry identity remains available in this page's memory. */}}catch(e){setError(errorMessage(e));}finally{setBusy(false);}}
-  if(loading)return <Loading/>;
-  if(!paper)return <section className="content-page"><Notice error>{error||'这个问答暂时无法打开。'}</Notice><a className="button secondary" href="#home">回到小屋</a></section>;
-  if(receipt)return <section className="quiz-receipt panel"><div className="receipt-stars"><Star/><Star/><Star/></div><p className="eyebrow">THANK YOU FOR BEING HERE</p><h1>谢谢你，为 Sonya 的生日添了一颗星</h1><p>{nickname}，你的回答已送达。</p><div className="score-circle"><strong>{receipt.score}<small> / {receipt.total}</small></strong><span>答对的题目</span></div><div className="participation-gift"><GiftIcon/><div><h2>一枚「星愿同行」纪念徽章</h2><p>无论答对几题，你的到来就是一份礼物。</p></div></div><p className="field-note">这份成绩只会交给 Sonya。小礼物由 Sonya 安排与确认。</p><a className="button secondary" href="#home">带着星光，回到小屋 <ArrowRight size={16}/></a></section>;
-  const answered=Object.keys(answers).length;
-  return <section className="quiz-player content-page"><div className="quiz-intro"><span className="pill">SONYA TURNS TWELVE ✧</span><h1>{paper.title}</h1><p>几道关于 Sonya 的小问题，一场朋友之间的小默契。</p><p className="field-note">不用注册 · 不计时 · 提交后由服务器评分</p></div>{error&&<Notice error>{error}</Notice>}<div className="panel nickname-panel"><label>让 Sonya 知道你是谁<input value={nickname} maxLength={32} autoComplete="off" placeholder="你的名字或昵称" onChange={e=>setNickname(e.target.value)} disabled={busy}/></label><p className="field-note">只写昵称就好，请勿填写全名、联系方式或地址。</p></div>{paper.questions.map((q,i)=><section className="panel player-question" key={q.id}><p className="eyebrow">QUESTION {String(i+1).padStart(2,'0')}</p><fieldset disabled={busy}><legend>{q.prompt}</legend><div className="player-options">{q.options.map((o,j)=><label className={answers[q.id]===j?'selected':''} key={j}><input type="radio" name={q.id} checked={answers[q.id]===j} onChange={()=>setAnswers({...answers,[q.id]:j})}/><span className="letter">{String.fromCharCode(65+j)}</span><span>{o}</span>{answers[q.id]===j&&<Check size={18}/>}</label>)}</div></fieldset></section>)}<div className="quiz-submit panel"><p>已回答 {answered} / {paper.questions.length} 题</p><button className="button primary" disabled={busy} onClick={()=>void submit()}>{busy?'正在送出回答…':'提交我的回答'}<ArrowRight size={17}/></button><p className="field-note">提交后不能修改。网络失败时可以重试，同一次提交不会重复记分。</p></div></section>;
+  const [paper, setPaper] = useState<PublicQuiz | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [nickname, setNickname] = useState("");
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [requestId] = useState(() => {
+    const key = `starwish.quiz.request.${token}`;
+    try {
+      const saved = sessionStorage.getItem(key);
+      if (saved) return saved;
+      const id = crypto.randomUUID();
+      sessionStorage.setItem(key, id);
+      return id;
+    } catch {
+      return crypto.randomUUID();
+    }
+  });
+  useEffect(() => {
+    let active = true;
+    api
+      .publicQuiz(token)
+      .then((p) => {
+        if (active) setPaper(p);
+      })
+      .catch((e) => {
+        if (active) setError(errorMessage(e));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [api, token]);
+  async function submit() {
+    if (!paper) return;
+    setError("");
+    if (!nickname.trim()) {
+      setError("请留下一个 Sonya 认得的昵称。");
+      return;
+    }
+    if (paper.questions.some((q) => answers[q.id] === undefined)) {
+      setError("还有题目没有选择答案，请检查一下。");
+      return;
+    }
+    setBusy(true);
+    try {
+      setReceipt(await api.submitQuiz(token, nickname, answers, requestId));
+      try {
+        sessionStorage.removeItem(`starwish.quiz.request.${token}`);
+      } catch {
+        /* Retry identity remains available in this page's memory. */
+      }
+    } catch (e) {
+      setError(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (loading) return <Loading />;
+  if (!paper)
+    return (
+      <section className="content-page">
+        <Notice error>{error || "这个问答暂时无法打开。"}</Notice>
+        <a className="button secondary" href="#home">
+          回到小屋
+        </a>
+      </section>
+    );
+  if (receipt)
+    return (
+      <section className="quiz-receipt panel">
+        <div className="receipt-stars">
+          <Star />
+          <Star />
+          <Star />
+        </div>
+        <p className="eyebrow">THANK YOU FOR BEING HERE</p>
+        <h1>谢谢你，为 Sonya 的生日添了一颗星</h1>
+        <p>{nickname}，你的回答已送达。</p>
+        <div className="score-circle">
+          <strong>
+            {receipt.score}
+            <small> / {receipt.total}</small>
+          </strong>
+          <span>答对的题目</span>
+        </div>
+        <div className="participation-gift">
+          <GiftIcon />
+          <div>
+            <h2>一枚「星愿同行」纪念徽章</h2>
+            <p>无论答对几题，你的到来就是一份礼物。</p>
+          </div>
+        </div>
+        <p className="field-note">
+          这份成绩只会交给 Sonya。小礼物由 Sonya 安排与确认。
+        </p>
+        <a className="button secondary" href="#home">
+          带着星光，回到小屋 <ArrowRight size={16} />
+        </a>
+      </section>
+    );
+  const answered = Object.keys(answers).length;
+  return (
+    <section className="quiz-player content-page">
+      <div className="quiz-intro">
+        <span className="pill">SONYA TURNS TWELVE ✧</span>
+        <h1>{paper.title}</h1>
+        <p>几道关于 Sonya 的小问题，一场朋友之间的小默契。</p>
+        <p className="field-note">不用注册 · 不计时 · 提交后由服务器评分</p>
+      </div>
+      {error && <Notice error>{error}</Notice>}
+      <div className="panel nickname-panel">
+        <label>
+          让 Sonya 知道你是谁
+          <input
+            value={nickname}
+            maxLength={32}
+            autoComplete="off"
+            placeholder="你的名字或昵称"
+            onChange={(e) => setNickname(e.target.value)}
+            disabled={busy}
+          />
+        </label>
+        <p className="field-note">
+          只写昵称就好，请勿填写全名、联系方式或地址。
+        </p>
+      </div>
+      {paper.questions.map((q, i) => (
+        <section className="panel player-question" key={q.id}>
+          <p className="eyebrow">QUESTION {String(i + 1).padStart(2, "0")}</p>
+          <fieldset disabled={busy}>
+            <legend>{q.prompt}</legend>
+            <div className="player-options">
+              {q.options.map((o, j) => (
+                <label
+                  className={answers[q.id] === j ? "selected" : ""}
+                  key={j}
+                >
+                  <input
+                    type="radio"
+                    name={q.id}
+                    checked={answers[q.id] === j}
+                    onChange={() => setAnswers({ ...answers, [q.id]: j })}
+                  />
+                  <span className="letter">{String.fromCharCode(65 + j)}</span>
+                  <span>{o}</span>
+                  {answers[q.id] === j && <Check size={18} />}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </section>
+      ))}
+      <div className="quiz-submit panel">
+        <p>
+          已回答 {answered} / {paper.questions.length} 题
+        </p>
+        <button
+          className="button primary"
+          disabled={busy}
+          onClick={() => void submit()}
+        >
+          {busy ? "正在送出回答…" : "提交我的回答"}
+          <ArrowRight size={17} />
+        </button>
+        <p className="field-note">
+          提交后不能修改。网络失败时可以重试，同一次提交不会重复记分。
+        </p>
+      </div>
+    </section>
+  );
 }

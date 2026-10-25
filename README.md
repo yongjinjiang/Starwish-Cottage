@@ -2,6 +2,12 @@
 
 A private family birthday space for Sonya, with a guest quiz and a shared collection of letters, greetings and artwork.
 
+Live site: https://starwish-cottage.vercel.app
+
+Source: https://github.com/yongjinjiang/Starwish-Cottage
+
+Supabase project reference: `oejcmfuwvwblulbcsxyj`. The database is deployed; the five Auth accounts must be provisioned locally before family login is available.
+
 - Frontend: React + TypeScript + Vite, hosted on Vercel.
 - Backend: Supabase Auth, PostgreSQL functions/transactions and RLS.
 - Artwork: a private Supabase Storage bucket with matching release rules.
@@ -55,14 +61,14 @@ Use `npm run build` and output directory `dist`. `vercel.json` defines SPA routi
 
 ## Privacy and access rules
 
-| Resource | Before reveal | After reveal |
-| --- | --- | --- |
-| Gift draft | Its author only | Its author only |
-| Published letter/art page | Its author only | All five invited members |
-| Artwork file | Its contributor owner only | Owner and members who can read a published page referencing it |
-| Quiz draft and private answer key | Sonya only | Sonya only |
-| Full quiz results and gift tracking | Sonya only, immediately | Sonya only |
-| Active quiz questions without answer keys | Holder of its random link | Same |
+| Resource                                  | Before reveal              | After reveal                                                   |
+| ----------------------------------------- | -------------------------- | -------------------------------------------------------------- |
+| Gift draft                                | Its author only            | Its author only                                                |
+| Published letter/art page                 | Its author only            | All five invited members                                       |
+| Artwork file                              | Its contributor owner only | Owner and members who can read a published page referencing it |
+| Quiz draft and private answer key         | Sonya only                 | Sonya only                                                     |
+| Full quiz results and gift tracking       | Sonya only, immediately    | Sonya only                                                     |
+| Active quiz questions without answer keys | Holder of its random link  | Same                                                           |
 
 Parents are contributors inside the app and have **no access to quiz results**. Infrastructure administrators with database/server credentials retain administrative access; do not share those credentials with family member accounts.
 
@@ -96,3 +102,7 @@ Browser tests use the explicit development sandbox to cover family publishing, r
 - `supabase/migrations/`: authoritative server schema and access policies.
 - `scripts/provision-family.mjs`: local-only Auth Admin API provisioning.
 - `scripts/test-database.mjs`: database policy and server behavior verification.
+
+## Database advisor notes
+
+The hosted Security Advisor flags the intentionally deny-all `cottage_event` table and the API functions that use `SECURITY DEFINER`. Those functions are deliberate, narrowly scoped boundaries: each management/read function checks the caller and ownership, and the three anonymous functions only expose server time or token-scoped quiz operations. Function grants are reset explicitly in migration 002 to remove Supabase default grants. Review future changes against the existing policy tests. See the [Supabase function advisor](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable).
