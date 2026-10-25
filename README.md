@@ -42,6 +42,16 @@ Run this **in your own local terminal**:
 npm run provision:family
 ```
 
+For a read-only credential check before creating accounts, run:
+
+```sh
+npm run provision:family -- --check
+```
+
+The script prints the target project URL, checks the key type, verifies Auth Admin access and reads the family membership table. This mode does not create users or reset passwords. If successful, run the normal command above to provision the accounts.
+
+If you see **Invalid API key**, open this project's [API Keys page](https://supabase.com/dashboard/project/oejcmfuwvwblulbcsxyj/settings/api-keys) and copy the complete value under **Secret keys** using its copy button. Use an `sb_secret_` key belonging to this project; a key's name, masked display, another project's key, publishable key, personal access token, account password and database password are different values. The script now explains these distinctions without printing the credential. Legacy `service_role` keys are also accepted after checking their embedded project reference and role; the server still verifies the token.
+
 The script asks for a Supabase server secret without echoing or saving it. Find it in the project's API key settings. It calls the official Supabase Auth Admin API and prints unique generated passwords for the five accounts. Save those privately, outside the repository. Do not paste server secrets or passwords into a public issue or commit.
 
 The script can also read `SUPABASE_SECRET_KEY` from the process environment. The example file contains a placeholder; remove that placeholder line to use the hidden prompt. `SUPABASE_URL` can fall back to `VITE_SUPABASE_URL`.
