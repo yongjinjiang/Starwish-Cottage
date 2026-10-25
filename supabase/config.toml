@@ -1,0 +1,14 @@
+project_id = "starwish-cottage"
+[api]
+enabled = true
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+enable_signup = false
+[auth.email]
+enable_signup = false
+[storage]
+enabled = true
+file_size_limit = "5MiB"
