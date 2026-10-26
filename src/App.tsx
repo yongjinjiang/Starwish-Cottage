@@ -433,7 +433,7 @@ function HomePage({
           <p>
             {revealed
               ? "家人的祝福已经揭晓，登录后一起打开吧。"
-              : "2026 年 10 月 26 日 · 晚上 6:00 · 丹佛时间"}
+              : "2026 年 10 月 26 日 · 晚上 8:00 · 加州时间"}
           </p>
         </div>
         {revealed ? (
@@ -596,7 +596,7 @@ function Gallery({
             <LockKeyhole size={20} />
           </div>
           <h2>写给你的爱，正在路上</h2>
-          <p>所有已发布的作品，将在 10 月 26 日晚 6 点（丹佛时间）一起揭晓。</p>
+          <p>所有已发布的作品，将在 10 月 26 日晚 8 点（加州时间）一起揭晓。</p>
           <Countdown revealAt={info.reveal_at} now={now} />
           <p className="field-note">未揭晓的文字与图片不会发送到你的浏览器。</p>
         </div>

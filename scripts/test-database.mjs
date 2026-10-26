@@ -1,5 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import assert from "node:assert/strict";
 const db = new PGlite();
 await db.exec(`
@@ -15,21 +15,12 @@ await db.exec(`
   alter table storage.objects enable row level security;
   grant select,insert,update,delete on storage.objects to authenticated;
 `);
-await db.exec(
-  await readFile(
-    new URL("../supabase/migrations/202610240001_cottage.sql", import.meta.url),
-    "utf8",
-  ),
-);
-await db.exec(
-  await readFile(
-    new URL(
-      "../supabase/migrations/202610240002_explicit_function_grants.sql",
-      import.meta.url,
-    ),
-    "utf8",
-  ),
-);
+const migrationsDirectory = new URL("../supabase/migrations/", import.meta.url);
+for (const name of (await readdir(migrationsDirectory))
+  .filter((name) => name.endsWith(".sql"))
+  .sort()) {
+  await db.exec(await readFile(new URL(name, migrationsDirectory), "utf8"));
+}
 const ids = [
   "00000000-0000-4000-8000-000000000012",
   "00000000-0000-4000-8000-000000000014",
@@ -70,6 +61,17 @@ async function eq(sql, args, expected) {
   checks++;
 }
 await root();
+await eq(
+  "select timezone, reveal_at = '2026-10-27T03:00:00Z'::timestamptz as correct_instant, reveal_at at time zone timezone = '2026-10-26 20:00:00'::timestamp as california_8pm from cottage_event where id",
+  [],
+  [
+    {
+      timezone: "America/Los_Angeles",
+      correct_instant: true,
+      california_8pm: true,
+    },
+  ],
+);
 await db.exec("update cottage_event set reveal_at=now()+interval '1 day'");
 const giftId = "11111111-1111-4111-8111-111111111111";
 const imagePath = `${ids[1]}/art.png`;

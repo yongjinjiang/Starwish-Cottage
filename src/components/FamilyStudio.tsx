@@ -90,7 +90,7 @@ export function FamilyStudio({
             ? "作品已撤回，大家暂时看不到它。"
             : revealed
               ? "作品已发布，家人现在可以看到了。"
-              : "已放进生日惊喜，10 月 26 日晚 6 点一起揭晓。",
+              : "已放进生日惊喜，10 月 26 日晚 8 点（加州时间）一起揭晓。",
       );
     } catch (e) {
       setError(errorMessage(e));

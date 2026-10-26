@@ -63,7 +63,9 @@ export const previewApi: CottageApi = {
       title: "Sonya 的十二岁生日",
       reveal_at: REVEAL_AT,
       timezone: TIMEZONE,
-      server_now: revealed ? "2026-10-27T00:00:01Z" : "2026-10-25T00:00:00Z",
+      server_now: revealed
+        ? new Date(Date.parse(REVEAL_AT) + 1000).toISOString()
+        : "2026-10-25T00:00:00Z",
     };
   },
   async getMember() {
@@ -207,13 +209,11 @@ export const previewApi: CottageApi = {
 // No example answers or family greetings are created on the real backend.
 export function previewTemplate() {
   const value = newQuizTemplate();
-  value.questions = value.questions
-    .slice(0, 2)
-    .map((q) => ({
-      ...q,
-      options: ["一本书", "另一本书", "一本漫画", "一本诗集"],
-      answer: 0,
-    }));
+  value.questions = value.questions.slice(0, 2).map((q) => ({
+    ...q,
+    options: ["一本书", "另一本书", "一本漫画", "一本诗集"],
+    answer: 0,
+  }));
   return value;
 }
 export type PreviewControls = typeof previewControls;

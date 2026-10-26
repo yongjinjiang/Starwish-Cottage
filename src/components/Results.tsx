@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Gift, LockKeyhole, RefreshCw, Users } from "lucide-react";
-import { errorMessage } from "../lib/domain";
+import { TIMEZONE, errorMessage } from "../lib/domain";
 import type { CottageApi, Submission } from "../lib/types";
 import { Empty, Loading, Notice } from "./shared";
 export function Results({ api }: { api: CottageApi }) {
@@ -98,7 +98,7 @@ export function Results({ api }: { api: CottageApi }) {
                       <p>
                         {row.quiz_title} ·{" "}
                         {new Date(row.submitted_at).toLocaleString("zh-CN", {
-                          timeZone: "America/Denver",
+                          timeZone: TIMEZONE,
                         })}
                       </p>
                     </div>

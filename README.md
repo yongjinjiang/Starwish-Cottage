@@ -11,7 +11,7 @@ Supabase project reference: `oejcmfuwvwblulbcsxyj`. The database is deployed; th
 - Frontend: React + TypeScript + Vite, hosted on Vercel.
 - Backend: Supabase Auth, PostgreSQL functions/transactions and RLS.
 - Artwork: a private Supabase Storage bucket with matching release rules.
-- Reveal: **October 26, 2026, 6:00 PM America/Denver** (`2026-10-27T00:00:00Z`).
+- Reveal: **October 26, 2026, 8:00 PM California time (America/Los_Angeles)** (`2026-10-27T03:00:00Z`).
 - Family accounts: `sonya12`, `Mia14`, `Aletheia10`, `mom45`, `dad51`.
 
 ## Local development
@@ -30,7 +30,7 @@ Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env.local`. Onl
 
 ## Deploy the backend
 
-Create a dedicated Supabase project. Apply both files in `supabase/migrations/` in filename order with the Supabase migration tool, SQL editor or linked CLI. Do not run it twice against an initialized project. This installs the tables, functions, permissions, private image bucket and release setting.
+Create a dedicated Supabase project. Apply all files in `supabase/migrations/` in filename order with the Supabase migration tool, SQL editor or linked CLI. Do not run it twice against an initialized project. This installs the tables, functions, permissions, private image bucket and release setting.
 
 This app uses Postgres RPC functions as its server API, so quiz grading and publishing do not require a separate Edge Function or Vercel backend. Server functions check authenticated identity and ownership explicitly, with an empty search path and restricted EXECUTE grants. Anonymous callers can only read a quiz by its random active token and submit validated answers; they cannot read drafts, keys, gallery data or submission records.
 

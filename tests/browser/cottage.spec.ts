@@ -35,7 +35,7 @@ test("family publishes a snapshot; Sonya sees it only after reveal and parents n
   await page.getByLabel("想对 Sonya 说的话").fill("愿你一直好奇，也一直勇敢。");
   await page.getByRole("button", { name: "发布到生日时刻" }).click();
   await expect(
-    page.getByText("已放进生日惊喜，10 月 26 日晚 6 点一起揭晓。"),
+    page.getByText("已放进生日惊喜，10 月 26 日晚 8 点（加州时间）一起揭晓。"),
   ).toBeVisible();
   await page.getByLabel("想对 Sonya 说的话").fill("未发布的新草稿");
   await page.getByRole("button", { name: "保存草稿", exact: true }).click();

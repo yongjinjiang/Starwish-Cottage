@@ -8,8 +8,8 @@ import {
 } from "../src/lib/domain";
 import { newQuizTemplate } from "../src/data/template";
 describe("birthday boundary", () => {
-  it("reveals at 6pm Denver, never one millisecond before", () => {
-    const time = Date.parse("2026-10-27T00:00:00Z");
+  it("reveals at 8pm California, never one millisecond before", () => {
+    const time = Date.parse("2026-10-27T03:00:00Z");
     expect(Date.parse(REVEAL_AT)).toBe(time);
     expect(isRevealed(REVEAL_AT, time - 1)).toBe(false);
     expect(isRevealed(REVEAL_AT, time)).toBe(true);

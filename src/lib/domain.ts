@@ -1,6 +1,6 @@
 import type { QuizDraft } from "./types";
-export const REVEAL_AT = "2026-10-26T18:00:00-06:00";
-export const TIMEZONE = "America/Denver";
+export const REVEAL_AT = "2026-10-26T20:00:00-07:00";
+export const TIMEZONE = "America/Los_Angeles";
 export const isRevealed = (revealAt: string, serverNow: number) =>
   serverNow >= Date.parse(revealAt);
 export function countdown(revealAt: string, serverNow: number) {
