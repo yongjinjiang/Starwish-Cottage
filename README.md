@@ -6,13 +6,23 @@ Live site: https://starwish-cottage.vercel.app
 
 Source: https://github.com/yongjinjiang/Starwish-Cottage
 
-Supabase project reference: `oejcmfuwvwblulbcsxyj`. The database is deployed; the five Auth accounts must be provisioned locally before family login is available.
+Supabase project reference: `oejcmfuwvwblulbcsxyj`. The production database and five invited family accounts are initialized. A fresh environment can provision accounts with the local script below.
 
 - Frontend: React + TypeScript + Vite, hosted on Vercel.
 - Backend: Supabase Auth, PostgreSQL functions/transactions and RLS.
 - Artwork: a private Supabase Storage bucket with matching release rules.
 - Reveal: **October 26, 2026, 8:00 PM California time (America/Los_Angeles)** (`2026-10-27T03:00:00Z`).
 - Family accounts: `sonya12`, `Mia14`, `Aletheia10`, `mom45`, `dad51`.
+
+## Interface languages
+
+The same website supports English and Simplified Chinese. The English / 中文 controls stay visible on desktop and mobile, including the sign-in and creation-preview dialogs.
+
+- Sonya, Mia and Aletheia default to English; Mom and Dad default to Chinese.
+- Each family member's chosen interface language is stored in `family_members.locale` and restored after login on another device. Authenticated clients may update only their own `locale` column, never identity or role fields.
+- Guests use their first supported browser language, falling back to English. An explicit guest choice is remembered in that browser, separately from family account preferences.
+- Switching languages preserves unsaved quiz/creation edits, guest nicknames and selected answers. A failed preference save displays a retry; the current interface still switches immediately.
+- Interface copy, labels, confirmations, validation, statuses and result dates are localized. New quiz templates start in the editor's current language. Existing questions, answers, letters and artwork are kept exactly as authored. There is no LLM translation service.
 
 ## Local development
 
@@ -102,7 +112,7 @@ npm run build
 
 Database tests run the actual migration against an isolated PostgreSQL-compatible PGlite instance with emulated Supabase Auth and Storage schemas. They verify real RLS policies, author-only editing, hidden artwork, release timing, publication snapshots, private answer keys, grading, retries, link rotation and Sonya-only results. They do not replace hosted Supabase integration checks for Auth/Storage behavior.
 
-Browser tests use the explicit development sandbox to cover family publishing, reveal behavior, quiz participation, gift tracking and mobile layout. No preview identity mechanism is shipped in production.
+Browser tests cover family publishing, reveal behavior, quiz participation, gift tracking, mobile layout and language switches that preserve form data. The development sandbox tests independent account preferences, save failures and rapid selection order. A fully intercepted Supabase backend also verifies the real API client restores a saved preference after reload and on a second browser device. No fictional session is sent to the hosted backend, and no preview identity mechanism is shipped in production.
 
 ## Structure
 

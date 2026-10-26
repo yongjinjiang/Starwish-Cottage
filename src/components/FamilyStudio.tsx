@@ -1,3 +1,4 @@
+import { useI18n } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -20,6 +21,7 @@ export function FamilyStudio({
   member: Member;
   revealed: boolean;
 }) {
+  const { t } = useI18n();
   const [drafts, setDrafts] = useState<Gift[]>([]);
   const [gift, setGift] = useState<Gift | null>(null);
   const [loading, setLoading] = useState(true);
@@ -120,7 +122,7 @@ export function FamilyStudio({
     }
   }
   function leave() {
-    if (dirty && !window.confirm("还有未保存的修改。确定离开这份草稿吗？"))
+    if (dirty && !window.confirm(t("还有未保存的修改。确定离开这份草稿吗？")))
       return;
     setGift(null);
     setDirty(false);
@@ -132,17 +134,20 @@ export function FamilyStudio({
     <section className="content-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">MADE WITH LOVE, BY YOU</p>
-          <h1>{gift ? "把心意写下来" : "我的创作小桌"}</h1>
+          <p className="eyebrow">{t("MADE WITH LOVE, BY YOU")}</p>
+          <h1>{gift ? t("把心意写下来") : t("我的创作小桌")}</h1>
           <p>
             {gift
-              ? "一封信、一幅画、一句藏了很久的赞美，都很好。"
-              : `${member.display_name}，这里是你为 Sonya 准备惊喜的地方。`}
+              ? t("一封信、一幅画、一句藏了很久的赞美，都很好。")
+              : t("{{name}}，这里是你为 Sonya 准备惊喜的地方。", {
+                  name: t(member.display_name),
+                })}
           </p>
         </div>
         {gift ? (
           <button className="button secondary" onClick={leave}>
-            <ArrowLeft size={17} /> 所有草稿
+            <ArrowLeft size={17} />
+            {t("所有草稿")}
           </button>
         ) : (
           <button
@@ -160,7 +165,8 @@ export function FamilyStudio({
               setMessage("");
             }}
           >
-            <Plus size={17} /> 新建一份心意
+            <Plus size={17} />
+            {t("新建一份心意")}
           </button>
         )}
       </div>
@@ -169,7 +175,7 @@ export function FamilyStudio({
       {!gift ? (
         <>
           <div className="hint-line">
-            保存留给自己，发布留给生日。未发布的草稿会一直保密。
+            {t("保存留给自己，发布留给生日。未发布的草稿会一直保密。")}
           </div>
           {drafts.length ? (
             <div className="draft-grid">
@@ -185,17 +191,17 @@ export function FamilyStudio({
                   }}
                 >
                   <span className="status-pill">
-                    {g.published_at ? "已发布 · 可继续编辑" : "私密草稿"}
+                    {g.published_at ? t("已发布 · 可继续编辑") : t("私密草稿")}
                   </span>
-                  <h2>{g.title || "还没起名字的心意"}</h2>
-                  <p>{g.body.slice(0, 90) || "一份等待被填满的心意。"}</p>
-                  <span className="text-link">继续创作 ↗</span>
+                  <h2>{g.title || t("还没起名字的心意")}</h2>
+                  <p>{g.body.slice(0, 90) || t("一份等待被填满的心意。")}</p>
+                  <span className="text-link">{t("继续创作 ↗")}</span>
                 </button>
               ))}
             </div>
           ) : (
-            <Empty title="第一份心意，从这里开始">
-              写一封生日信，或上传你亲手画的画。
+            <Empty title={t("第一份心意，从这里开始")}>
+              {t("写一封生日信，或上传你亲手画的画。")}
             </Empty>
           )}
         </>
@@ -203,36 +209,37 @@ export function FamilyStudio({
         <div className="editor-layout">
           <div className="panel editor">
             <label>
-              作品标题
+              {t("作品标题")}
               <input
                 maxLength={120}
                 value={gift.title}
                 onChange={(e) => update({ title: e.target.value })}
-                placeholder="例如：送给我最爱的妹妹"
+                placeholder={t("例如：送给我最爱的妹妹")}
               />
             </label>
             <label>
-              想对 Sonya 说的话
+              {t("想对 Sonya 说的话")}
               <textarea
+                aria-label={t("想对 Sonya 说的话")}
                 rows={12}
                 maxLength={10000}
                 value={gift.body}
                 onChange={(e) => update({ body: e.target.value })}
-                placeholder="亲爱的 Sonya，\n我最欣赏你的一点是……"
+                placeholder={t("亲爱的 Sonya，\n我最欣赏你的一点是……")}
               />
             </label>
             <span className="field-note">
-              {gift.body.length}/10000 · 文字会按你的换行展示
+              {gift.body.length}/10000 · {t("文字会按你的换行展示")}
             </span>
             <label>
-              挑一种心情色彩
+              {t("挑一种心情色彩")}
               <select
                 value={gift.theme}
                 onChange={(e) => update({ theme: e.target.value as Theme })}
               >
-                <option value="starlight">暖暖星光</option>
-                <option value="garden">花园来信</option>
-                <option value="moon">月亮晚安</option>
+                <option value="starlight">{t("暖暖星光")}</option>
+                <option value="garden">{t("花园来信")}</option>
+                <option value="moon">{t("月亮晚安")}</option>
               </select>
             </label>
             <div className="image-list">
@@ -241,11 +248,11 @@ export function FamilyStudio({
                   <ArtImage
                     api={api}
                     objectPath={p}
-                    alt={`已上传作品 ${i + 1}`}
+                    alt={t("已上传作品 {{n}}", { n: i + 1 })}
                   />
                   <button
                     className="icon-button"
-                    aria-label={`移除第 ${i + 1} 张图片`}
+                    aria-label={t("移除第 {{n}} 张图片", { n: i + 1 })}
                     disabled={busy}
                     onClick={() =>
                       update({
@@ -260,7 +267,7 @@ export function FamilyStudio({
             </div>
             <label className="upload-button">
               <ImagePlus size={19} />
-              {busy ? "正在处理…" : "添加绘画或照片"}
+              {busy ? t("正在处理…") : t("添加绘画或照片")}
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -272,35 +279,39 @@ export function FamilyStudio({
               />
             </label>
             <p className="field-note">
-              最多 5 张，每张不超过 5 MB。图片随作品一起私密保存。
+              {t("最多 5 张，每张不超过 5 MB。图片随作品一起私密保存。")}
             </p>
           </div>
           <aside className="panel editor-aside">
             <SparkleStamp />
-            <h2>一份心意，慢慢写</h2>
+            <h2>{t("一份心意，慢慢写")}</h2>
             <p>
-              保存不会提前公开。发布后的作品会在约定时刻，与大家的祝福一起出现。
+              {t(
+                "保存不会提前公开。发布后的作品会在约定时刻，与大家的祝福一起出现。",
+              )}
             </p>
             <button
               className="button secondary full"
               disabled={busy}
               onClick={() => setPreview(true)}
             >
-              <Eye size={17} /> 预览作品
+              <Eye size={17} />
+              {t("预览作品")}
             </button>
             <button
               className="button secondary full"
               disabled={busy}
               onClick={() => void run("save")}
             >
-              <Save size={17} /> {busy ? "正在保存…" : "保存草稿"}
+              <Save size={17} /> {busy ? t("正在保存…") : t("保存草稿")}
             </button>
             <button
               className="button primary full"
               disabled={busy}
               onClick={() => void run("publish")}
             >
-              <Send size={17} /> {revealed ? "发布给全家" : "发布到生日时刻"}
+              <Send size={17} />{" "}
+              {revealed ? t("发布给全家") : t("发布到生日时刻")}
             </button>
             {gift.published_at && (
               <button
@@ -309,19 +320,19 @@ export function FamilyStudio({
                 onClick={() => {
                   if (
                     window.confirm(
-                      "撤回后，家人将无法继续打开这份作品。确定撤回吗？",
+                      t("撤回后，家人将无法继续打开这份作品。确定撤回吗？"),
                     )
                   )
                     void run("withdraw");
                 }}
               >
-                撤回已发布的作品
+                {t("撤回已发布的作品")}
               </button>
             )}
             <p className="field-note">
               {dirty
-                ? "还有未保存的修改"
-                : "每一次发布，都会保存一份独立的展示版本。"}
+                ? t("还有未保存的修改")
+                : t("每一次发布，都会保存一份独立的展示版本。")}
             </p>
           </aside>
         </div>
@@ -329,7 +340,7 @@ export function FamilyStudio({
       {preview && gift && (
         <GiftPage
           api={api}
-          gift={{ ...gift, author_name: member.display_name }}
+          gift={{ ...gift, author_name: t(member.display_name) }}
           onClose={() => setPreview(false)}
         />
       )}

@@ -36,6 +36,15 @@ async function userId() {
 export const realApi: CottageApi = {
   getInfo: () => rpc("cottage_info"),
   getMember: member,
+  async setLocale(userId, locale) {
+    const { error } = await db()
+      .from("family_members")
+      .update({ locale })
+      .eq("user_id", userId)
+      .select("locale")
+      .single();
+    if (error) throw error;
+  },
   async signIn(handle, password) {
     const canonical = HANDLES.find(
       (h) => h.toLowerCase() === handle.trim().toLowerCase(),

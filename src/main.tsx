@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { realApi } from "./lib/api";
 import "./styles.css";
+import { I18nProvider } from "./lib/i18n";
 async function start() {
   const preview =
     import.meta.env.DEV &&
@@ -11,10 +12,12 @@ async function start() {
       : null;
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-      <App
-        api={preview?.previewApi ?? realApi}
-        previewControls={preview?.previewControls}
-      />
+      <I18nProvider api={preview?.previewApi ?? realApi}>
+        <App
+          api={preview?.previewApi ?? realApi}
+          previewControls={preview?.previewControls}
+        />
+      </I18nProvider>
     </React.StrictMode>,
   );
 }

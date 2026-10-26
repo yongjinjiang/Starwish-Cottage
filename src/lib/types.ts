@@ -1,3 +1,4 @@
+import type { Locale } from "./locale";
 export const HANDLES = [
   "sonya12",
   "Mia14",
@@ -12,6 +13,7 @@ export interface Member {
   handle: Handle;
   display_name: string;
   role: "celebrant" | "contributor" | "parent";
+  locale?: Locale | null;
 }
 export interface EventInfo {
   title: string;
@@ -67,6 +69,7 @@ export interface Submission extends Receipt {
 export interface CottageApi {
   getInfo(): Promise<EventInfo>;
   getMember(): Promise<Member | null>;
+  setLocale(userId: string, locale: Locale): Promise<void>;
   signIn(handle: string, password: string): Promise<void>;
   signOut(): Promise<void>;
   listDrafts(): Promise<Gift[]>;

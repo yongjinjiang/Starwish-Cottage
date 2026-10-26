@@ -1,10 +1,12 @@
+import { useI18n } from "../lib/i18n";
 export function CottageIllustration() {
+  const { t } = useI18n();
   return (
     <svg
       className="cottage-illustration"
       viewBox="0 0 590 470"
       role="img"
-      aria-label="星空下，一间亮着暖灯的小屋，花园里收藏着家人的心愿"
+      aria-label={t("星空下，一间亮着暖灯的小屋，花园里收藏着家人的心愿")}
     >
       <defs>
         <radialGradient id="glow">

@@ -68,6 +68,10 @@ export const previewApi: CottageApi = {
         : "2026-10-25T00:00:00Z",
     };
   },
+  async setLocale(userId, locale) {
+    if (requireMember().user_id !== userId) throw new Error("family_only");
+    current!.locale = locale;
+  },
   async getMember() {
     return clone(current);
   },

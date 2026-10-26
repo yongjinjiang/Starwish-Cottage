@@ -60,6 +60,42 @@ async function eq(sql, args, expected) {
   assert.deepEqual(result.rows, expected);
   checks++;
 }
+await as(1);
+await eq(
+  "update family_members set locale='zh-CN' where user_id=$1 returning locale",
+  [ids[1]],
+  [{ locale: "zh-CN" }],
+);
+await eq("select locale from family_members", [], [{ locale: "zh-CN" }]);
+await eq(
+  "update family_members set locale='en' where user_id=$1 returning locale",
+  [ids[0]],
+  [],
+);
+await rejects(
+  "update family_members set role='parent' where user_id=$1",
+  [ids[1]],
+  /permission denied/,
+);
+await rejects(
+  "update family_members set user_id=$1",
+  [ids[0]],
+  /permission denied/,
+);
+await rejects(
+  "update family_members set handle='mom45'",
+  [],
+  /permission denied/,
+);
+await rejects(
+  "update family_members set locale='fr' where user_id=$1",
+  [ids[1]],
+  /check constraint/,
+);
+await as(null);
+await rejects("update family_members set locale='en'", [], /permission denied/);
+await as(1);
+await eq("select locale from family_members", [], [{ locale: "zh-CN" }]);
 await root();
 await eq(
   "select timezone, reveal_at = '2026-10-27T03:00:00Z'::timestamptz as correct_instant, reveal_at at time zone timezone = '2026-10-26 20:00:00'::timestamp as california_8pm from cottage_event where id",
